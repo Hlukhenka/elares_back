@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const app = require('./app');
+require('dotenv').config();
 const { DB_URI, PORT } = process.env;
 
 mongoose.set('strictQuery', true);
