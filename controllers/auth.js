@@ -10,8 +10,6 @@ const signup = async (req, res) => {
 
   const user = await User.findOne({ surname });
 
-  console.log(user);
-
   if (!name) {
     return res.status(400).json({ message: 'Name is required' });
   }
@@ -27,11 +25,20 @@ const signup = async (req, res) => {
     password: hashPassword,
   });
 
+  const payload = {
+    id: newUser._id,
+  };
+
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '24h' });
+
+  await User.findByIdAndUpdate(newUser._id, { token });
+
   const response = {
     user: {
       name: newUser.name,
       surname: newUser.surname,
     },
+    token,
   };
   res.status(201).json(response);
 };
