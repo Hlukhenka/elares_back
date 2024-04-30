@@ -1,19 +1,36 @@
 const { ctrlWrapper, HttpError } = require('../helpers');
 const { Driver, User } = require('../models');
 
+const getAllDrivers = async (req, res) => {
+  const drivers = await Driver.find();
+
+  res.status(201).json({drivers})
+};
+
 const addDriver = async (req, res) => {
   const { surname } = req.body;
-  const { _id: owner } = req.user;
+  const { _id: owner, name: createdBy, surname: createdBySurname } = req.user;
 
   const user = await User.findById(owner);
-
   const driver = await Driver.findOne({ surname });
+
+  const userToAdded = {
+    name: user.name,
+    surname: user.surname,
+  };
 
   if (driver) {
     throw HttpError(409, 'Surname already in use');
   }
 
-  const newDriver = await Driver.create(req.body);
+  const newDriver = await Driver.create({
+    ...req.body,
+    owner,
+    created: {
+      name: createdBy,
+      surname: createdBySurname,
+    },
+  });
 
   const response = {
     driver: {
@@ -34,6 +51,7 @@ const updateDriver = async (req, res) => {
 };
 
 module.exports = {
+  getAllDrivers: ctrlWrapper(getAllDrivers),
   addDriver: ctrlWrapper(addDriver),
   updateDriver: ctrlWrapper(updateDriver),
 };

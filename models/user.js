@@ -28,6 +28,8 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+
+    drivers: [{ type: Schema.Types.ObjectId, ref: 'driver' }],
   },
   { versionKey: false, timestamps: true },
 );

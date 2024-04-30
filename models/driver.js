@@ -21,6 +21,10 @@ const driverSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'user',
     },
+    created: {
+      name: { type: String },
+      surname: { type: String },
+    },
   },
   { versionKey: false, timestamps: true },
 );
