@@ -9,15 +9,11 @@ const getAllDrivers = async (req, res) => {
 
 const addDriver = async (req, res) => {
   const { surname } = req.body;
-  const { _id: owner, name: createdBy, surname: createdBySurname } = req.user;
+  const { _id: owner, name: createdBy, surnameOwner: createdBySurname } = req.user;
 
   const user = await User.findById(owner);
   const driver = await Driver.findOne({ surname });
 
-  const userToAdded = {
-    name: user.name,
-    surname: user.surname,
-  };
 
   if (driver) {
     throw HttpError(409, 'Surname already in use');
