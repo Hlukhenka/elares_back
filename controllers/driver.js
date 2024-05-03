@@ -4,22 +4,25 @@ const { Driver, User } = require('../models');
 const getAllDrivers = async (req, res) => {
   const drivers = await Driver.find();
 
-  res.status(201).json({drivers})
+  res.status(201).json({ drivers });
 };
 
 const addDriver = async (req, res) => {
   const { surname } = req.body;
-  const { _id: owner, name: createdBy, surnameOwner: createdBySurname } = req.user;
+  const {
+    _id: owner,
+    name: createdBy,
+    surnameOwner: createdBySurname,
+  } = req.user;
 
   const user = await User.findById(owner);
   const driver = await Driver.findOne({ surname });
-
 
   if (driver) {
     throw HttpError(409, 'Surname already in use');
   }
 
-  const newDriver = await Driver.create({
+  await Driver.create({
     ...req.body,
     owner,
     created: {
@@ -29,11 +32,8 @@ const addDriver = async (req, res) => {
   });
 
   const response = {
-    driver: {
-      name: newDriver.name,
-      surname: newDriver.surname,
-      created: user.surname,
-    },
+    ...req,
+    created: user.surname,
   };
 
   res.status(201).json(response);
