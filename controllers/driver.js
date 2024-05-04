@@ -22,7 +22,7 @@ const addDriver = async (req, res) => {
     throw HttpError(409, 'Surname already in use');
   }
 
-  await Driver.create({
+   await Driver.create({
     ...req.body,
     owner,
     created: {
@@ -32,10 +32,11 @@ const addDriver = async (req, res) => {
   });
 
   const response = {
-    ...req,
+    ...req.body,
     created: user.surname,
   };
 
+  console.log(response);
   res.status(201).json(response);
 };
 
