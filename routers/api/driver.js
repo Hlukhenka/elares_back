@@ -8,5 +8,6 @@ const { validateBody, authenticate } = require('../../middlewares');
 router.get('/list', authenticate, ctrl.getAllDrivers);
 router.post('/addDriver', authenticate, ctrl.addDriver);
 router.put('/updateDriver', authenticate, ctrl.updateDriver);
+router.delete('/deleteDriver/:id', authenticate, ctrl.deleteDriver);
 
 module.exports = router;

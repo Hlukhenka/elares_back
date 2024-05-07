@@ -22,7 +22,7 @@ const addDriver = async (req, res) => {
     throw HttpError(409, 'Surname already in use');
   }
 
-   await Driver.create({
+  await Driver.create({
     ...req.body,
     owner,
     created: {
@@ -47,8 +47,20 @@ const updateDriver = async (req, res) => {
   res.status(201).json(driver);
 };
 
+const deleteDriver = async (req, res) => {
+  const { id } = req.params;
+  const deletedDriver = await Driver.findByIdAndDelete(id);
+
+  if (deletedDriver === null) {
+    throw HttpError(404, 'Not found');
+  }
+
+  res.status(200).json(deletedDriver);
+};
+
 module.exports = {
   getAllDrivers: ctrlWrapper(getAllDrivers),
   addDriver: ctrlWrapper(addDriver),
   updateDriver: ctrlWrapper(updateDriver),
+  deleteDriver: ctrlWrapper(deleteDriver),
 };
