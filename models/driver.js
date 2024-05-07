@@ -25,6 +25,10 @@ const driverSchema = new Schema(
       name: { type: String },
       surname: { type: String },
     },
+
+    notes: {
+      type: String,
+    },
   },
   { versionKey: false, timestamps: true },
 );
