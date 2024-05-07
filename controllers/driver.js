@@ -42,12 +42,16 @@ const addDriver = async (req, res) => {
 
 const updateDriver = async (req, res) => {
   const { date, time, city, id, notes } = req.body;
-  const driver = await Driver.findByIdAndUpdate(id, {
-    city,
-    time,
-    date,
-    notes,
-  });
+  const driver = await Driver.findByIdAndUpdate(
+    id,
+    {
+      city,
+      time,
+      date,
+      notes,
+    },
+    { new: true },
+  );
 
   res.status(201).json(driver);
 };
