@@ -41,10 +41,12 @@ const addDriver = async (req, res) => {
 };
 
 const updateDriver = async (req, res) => {
-  const { date, time, city, id, notes } = req.body;
+  const { date, time, city, id, notes, name, surname } = req.body;
   const driver = await Driver.findByIdAndUpdate(
     id,
     {
+      name,
+      surname,
       city,
       time,
       date,
