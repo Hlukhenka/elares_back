@@ -6,7 +6,7 @@ const { SECRET_KEY } = process.env;
 const { User } = require('../models');
 
 const signup = async (req, res) => {
-  const { surname, password, name } = req.body;
+  const { surname, password, name, subscription } = req.body;
 
   const user = await User.findOne({ surname });
 
@@ -44,7 +44,7 @@ const signup = async (req, res) => {
 };
 
 const signin = async (req, res) => {
-  const { surname, password } = req.body;
+  const { surname, password, } = req.body;
 
   const user = await User.findOne({ surname });
 
@@ -61,6 +61,7 @@ const signin = async (req, res) => {
   const payload = {
     id: user._id,
   };
+
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '24h' });
 

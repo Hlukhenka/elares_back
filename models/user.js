@@ -28,6 +28,9 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    subscription: {
+      type: Object,
+    },
 
     drivers: [{ type: Schema.Types.ObjectId, ref: 'driver' }],
   },
