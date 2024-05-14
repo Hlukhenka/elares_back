@@ -1,8 +1,23 @@
 require('dotenv').config();
 const { ctrlWrapper, HttpError } = require('../helpers');
 const { Driver, User } = require('../models');
-const { PublicKey, PrivateKey } = process.env;
-const webpush = require('web-push');
+// const { PublicKey, PrivateKey } = process.env;
+// const webpush = require('web-push');
+
+// webpush.setVapidDetails(
+//   'mailto:anastasiagluhenka@gmail.com',
+//   PublicKey,
+//   PrivateKey,
+// );
+
+// const sendNotification = async (subscription, dataToSend) => {
+//   try {
+//     await webpush.sendNotification(subscription, JSON.stringify(dataToSend));
+//     console.log('Notification sent successfully!');
+//   } catch (error) {
+//     console.error('Error sending notification:', error);
+//   }
+// };
 
 const getAllDrivers = async (req, res) => {
   const drivers = await Driver.find();
@@ -44,7 +59,10 @@ const addDriver = async (req, res) => {
 };
 
 const updateDriver = async (req, res) => {
-  const { date, time, city, id, notes, name, surname } = req.body;
+  const { date, time, city, id, notes, name, surname, owner } = req.body;
+
+  console.log(req.user.subscription);
+
   const driver = await Driver.findByIdAndUpdate(
     id,
     {
@@ -58,39 +76,20 @@ const updateDriver = async (req, res) => {
     { new: true },
   );
 
-  const users = await User.find({
-    'subscription.endpoint': { $exists: true },
-  });
+  // const subscription = {
+  //   endpoint: 'https://example.com/push/subscribe',
+  //   keys: {
+  //     auth: 'authToken',
+  //     p256dh: 'p256dhToken',
+  //   },
+  // };
 
-  console.log(users);
+  // const notificationData = {
+  //   title: 'Оновлення даних про водія',
+  //   body: `Ім'я: ${name}, Прізвище: ${surname}, Місто: ${city}, Час: ${time}, Дата: ${date}, Примітки: ${notes}`,
+  // };
 
-  // 2. Переберіть користувачів та надсилайте їм повідомлення
-  for (const user of users) {
-    const pushSubscription = user.subscription;
-
-    // Створіть повідомлення (можна налаштувати текст та інші параметри)
-    const notificationPayload = {
-      message: `Водій "${driver.surname}" оновлено! `,
-    };
-
-
-    try {
-      // Відправте push-повідомлення користувачеві
-      await webpush.sendNotification(
-        pushSubscription,
-        JSON.stringify(notificationPayload),
-        {
-          VAPIDPublicKey: PublicKey,
-          VAPIDPrivateKey: PrivateKey,
-        },
-      );
-
-      console.log('yes');
-    } catch (error) {
-      console.error('Помилка надсилання push-повідомлення:', error.message);
-      // Оберіть дію при помилці, наприклад, ведення журналу помилок
-    }
-  }
+  // await sendNotification(subscription, notificationData);
 
   res.status(201).json(driver);
 };
