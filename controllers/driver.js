@@ -1,23 +1,8 @@
 require('dotenv').config();
 const { ctrlWrapper, HttpError } = require('../helpers');
 const { Driver, User } = require('../models');
-// const { PublicKey, PrivateKey } = process.env;
-// const webpush = require('web-push');
-
-// webpush.setVapidDetails(
-//   'mailto:anastasiagluhenka@gmail.com',
-//   PublicKey,
-//   PrivateKey,
-// );
-
-// const sendNotification = async (subscription, dataToSend) => {
-//   try {
-//     await webpush.sendNotification(subscription, JSON.stringify(dataToSend));
-//     console.log('Notification sent successfully!');
-//   } catch (error) {
-//     console.error('Error sending notification:', error);
-//   }
-// };
+const { PublicKey, PrivateKey } = process.env;
+const webpush = require('web-push');
 
 const getAllDrivers = async (req, res) => {
   const drivers = await Driver.find();
@@ -59,9 +44,10 @@ const addDriver = async (req, res) => {
 };
 
 const updateDriver = async (req, res) => {
-  const { date, time, city, id, notes, name, surname, owner } = req.body;
+  const { date, time, city, id, notes, name, surname } = req.body;
 
-  console.log(req.user.subscription);
+  const subscriptions = req.user.subscription;
+  console.log(subscriptions);
 
   const driver = await Driver.findByIdAndUpdate(
     id,
@@ -76,20 +62,27 @@ const updateDriver = async (req, res) => {
     { new: true },
   );
 
-  // const subscription = {
-  //   endpoint: 'https://example.com/push/subscribe',
-  //   keys: {
-  //     auth: 'authToken',
-  //     p256dh: 'p256dhToken',
-  //   },
-  // };
+  console.log(webpush);
 
-  // const notificationData = {
-  //   title: 'Оновлення даних про водія',
-  //   body: `Ім'я: ${name}, Прізвище: ${surname}, Місто: ${city}, Час: ${time}, Дата: ${date}, Примітки: ${notes}`,
-  // };
+  webpush.setVapidDetails(
+    'mailto:anastasiagluhenka@gmail.com',
+    PublicKey,
+    PrivateKey,
+  );
 
-  // await sendNotification(subscription, notificationData);
+  const sendNotification = async (subscription, dataToSend) => {
+    try {
+      await webpush.sendNotification(subscription, JSON.stringify(dataToSend));
+      console.log('Notification sent successfully!');
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  };
+
+  subscriptions.forEach(async subscription => {
+    await sendNotification(subscription, { message: 'Driver updated' });
+    console.log(subscription);
+  });
 
   res.status(201).json(driver);
 };

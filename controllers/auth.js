@@ -82,13 +82,28 @@ const current = async (req, res) => {
     },
   });
 };
+
 const addSubscription = async (req, res) => {
-  const { subscription } = req.body;
   const { id } = req.user;
+  const user = await User.findById(id);
 
-  await User.findByIdAndUpdate(id, subscription);
+  const newEndpoint = req.body.endpoint;
+  const userEndpoint = user.subscription;
 
-  res.status(201).json({ message: 'addSubscription' });
+  if (!userEndpoint) {
+    user.subscription.push(req.body);
+    await user.save();
+    return res.status(201).json({ message: 'Subscription added successfully' });
+  }
+
+  const endpointExists = user.subscription.some(
+    endpoint => endpoint === newEndpoint,
+  );
+
+  if (endpointExists) {
+    return res.status(409).json({ message: 'Endpoint already in use' });
+  }
+  res.status(201).json({ message: 'Subscription added successfully' });
 };
 
 const signout = async (req, res) => {
